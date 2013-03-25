@@ -8,7 +8,7 @@ class App
 
     function __construct()
     {
-        $this->params = require(__DIR__ . '../config/config.php');
+        $this->params = require(__DIR__ . '/../config/config.php');
 
         $this->installErrorHandler();
     }
@@ -30,6 +30,7 @@ class App
             !in_array($_SERVER['HTTP_AUTH_PROTOCOL'], array('imap', 'pop3'))
         ) {
             header('Auth-Status: Invalid login or password');
+            return;
         }
 
         $redis = new Redis();
@@ -42,6 +43,8 @@ class App
             $mailPort = 143;
         } elseif ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'pop3') {
             $mailPort = 110;
+        } else {
+            throw new Exception("Unknown auth protocol: " . $_SERVER['HTTP_AUTH_PROTOCOL']);
         }
         header("Auth-Status: OK");
         header("Auth-Server: " . $mailHost);

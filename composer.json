@@ -8,8 +8,10 @@
             "email": "to.merge@gmail.com"
         }
     ],
+    "require-dev": {
+        "ukko/phpredis-phpdoc": "dev-master"
+    },
     "require": {
-        "ukko/phpredis-phpdoc": "dev-master",
         "raven/raven": "0.5.1"
     }
 }
