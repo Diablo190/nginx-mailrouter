@@ -50,7 +50,19 @@ class App
         header("Auth-Server: " . $mailHost);
         header("Auth-Port: " . $mailPort);
     }
+
+    public function isUserOnNewBackend()
+    {
+        $redis = new Redis();
+        $redis->connect('127.0.0.1');
+        echo json_encode($redis->exists($_GET['username']));
+    }
 }
 
 $app = new App();
-$app->run();
+
+if (!empty($_GET['username'])) {
+    $app->isUserOnNewBackend();
+} else {
+    $app->run();
+}
