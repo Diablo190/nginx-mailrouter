@@ -57,11 +57,20 @@ class App
         $redis->connect('127.0.0.1');
         echo json_encode($redis->exists($_GET['username']));
     }
+
+    public function setUserOnNewBackend()
+    {
+        $redis = new Redis();
+        $redis->connect('127.0.0.1');
+        echo json_encode($redis->set($_GET['username'], 1));
+    }
 }
 
 $app = new App();
 
-if (!empty($_GET['username'])) {
+if (!empty($_GET['username']) && !empty($_GET['set'])) {
+    $app->setUserOnNewBackend();
+} elseif (!empty($_GET['username'])) {
     $app->isUserOnNewBackend();
 } else {
     $app->run();
