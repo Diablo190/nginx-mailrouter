@@ -61,8 +61,17 @@ class App
     public function setUserOnNewBackend()
     {
         $redis = new Redis();
-        $redis->connect('127.0.0.1');
-        echo json_encode($redis->set($_GET['username'], 1));
+        $connected = $redis->connect('127.0.0.1');
+        if (!$connected) {
+            echo json_encode(false);
+        }
+
+        if ($_GET['set'] == 1) {
+            echo json_encode($redis->set($_GET['username'], 1));
+        } elseif ($_GET['set'] == 0) {
+            $redis->delete($_GET['username']);
+            echo json_encode(true);
+        }
     }
 }
 
