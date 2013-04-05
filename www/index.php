@@ -69,8 +69,7 @@ class App
         if ($_GET['set'] == 1) {
             echo json_encode($redis->set($_GET['username'], 1));
         } elseif ($_GET['set'] == 0) {
-            $redis->delete($_GET['username']);
-            echo json_encode(true);
+            echo json_encode((boolean)$redis->del($_GET['username']));
         }
     }
 }
