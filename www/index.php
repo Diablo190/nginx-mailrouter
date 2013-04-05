@@ -76,7 +76,7 @@ class App
 
 $app = new App();
 
-if (!empty($_GET['username']) && !empty($_GET['set'])) {
+if (!empty($_GET['username']) && isset($_GET['set'])) {
     $app->setUserOnNewBackend();
 } elseif (!empty($_GET['username'])) {
     $app->isUserOnNewBackend();
