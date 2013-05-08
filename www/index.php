@@ -27,7 +27,7 @@ class App
     {
         if (empty($_SERVER['HTTP_AUTH_USER']) ||
             empty($_SERVER['HTTP_AUTH_PROTOCOL']) ||
-            !in_array($_SERVER['HTTP_AUTH_PROTOCOL'], array('imap', 'pop3'))
+            !in_array($_SERVER['HTTP_AUTH_PROTOCOL'], array('imap', 'pop3', 'smtp'))
         ) {
             header('Auth-Status: Invalid login or password');
             return;
@@ -43,6 +43,8 @@ class App
             $mailPort = 143;
         } elseif ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'pop3') {
             $mailPort = 110;
+        } elseif ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'smtp') {
+            $mailPort = 25;
         } else {
             throw new Exception("Unknown auth protocol: " . $_SERVER['HTTP_AUTH_PROTOCOL']);
         }
