@@ -57,9 +57,9 @@ class App
         list($login, $domen) = explode('@', $recipient);
         $redis = new Redis();
         $redis->connect('127.0.0.1');
-        $mailHost = $this->params['oldMailBackendServerIp'];
+        $mailHost = $this->params['oldMailServerIp'];
         if ($redis->exists($login)) {
-            $mailHost = $this->params['newMailBackendServerIp'];
+            $mailHost = $this->params['newMailServerIp'];
         }
         header("Auth-Status: OK");
         header("Auth-Server: " . $mailHost);

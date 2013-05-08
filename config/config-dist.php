@@ -5,7 +5,4 @@ return array(
 
     'oldMailServerIp' => '',
     'newMailServerIp' => '',
-
-    'oldMailBackendServerIp' => '',
-    'newMailBackendServerIp' => '',
 );
