@@ -23,11 +23,11 @@ class App
         $error_handler->registerShutdownFunction();
     }
 
-    public function run()
+    public function popImapProxy()
     {
         if (empty($_SERVER['HTTP_AUTH_USER']) ||
             empty($_SERVER['HTTP_AUTH_PROTOCOL']) ||
-            !in_array($_SERVER['HTTP_AUTH_PROTOCOL'], array('imap', 'pop3', 'smtp'))
+            !in_array($_SERVER['HTTP_AUTH_PROTOCOL'], array('imap', 'pop3'))
         ) {
             header('Auth-Status: Invalid login or password');
             return;
@@ -43,14 +43,27 @@ class App
             $mailPort = 143;
         } elseif ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'pop3') {
             $mailPort = 110;
-        } elseif ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'smtp') {
-            $mailPort = 25;
         } else {
             throw new Exception("Unknown auth protocol: " . $_SERVER['HTTP_AUTH_PROTOCOL']);
         }
         header("Auth-Status: OK");
         header("Auth-Server: " . $mailHost);
         header("Auth-Port: " . $mailPort);
+    }
+
+    public function smtpProxy()
+    {
+        $recipient = trim(end(explode(':', $_SERVER['HTTP_AUTH_SMTP_TO'])));
+        list($login, $domen) = explode('@', $recipient);
+        $redis = new Redis();
+        $redis->connect('127.0.0.1');
+        $mailHost = $this->params['oldMailBackendServerIp'];
+        if ($redis->exists($login)) {
+            $mailHost = $this->params['newMailBackendServerIp'];
+        }
+        header("Auth-Status: OK");
+        header("Auth-Server: " . $mailHost);
+        header("Auth-Port: 25");
     }
 
     public function isUserOnNewBackend()
@@ -82,6 +95,8 @@ if (!empty($_GET['username']) && isset($_GET['set'])) {
     $app->setUserOnNewBackend();
 } elseif (!empty($_GET['username'])) {
     $app->isUserOnNewBackend();
+} elseif (!empty($_SERVER['HTTP_AUTH_SMTP_TO'])) {
+    $app->smtpProxy();
 } else {
-    $app->run();
+    $app->popImapProxy();
 }
