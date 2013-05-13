@@ -36,7 +36,8 @@ class App
         $redis = new Redis();
         $redis->connect('127.0.0.1');
         $mailHost = $this->params['oldMailServerIp'];
-        if ($redis->exists($_SERVER['HTTP_AUTH_USER'])) {
+        $key = $this->params['redisRegistryPrefix'] . ':' . $_SERVER['HTTP_AUTH_USER'] . '@' . $this->params['mailDomain'];
+        if ($redis->exists($key)) {
             $mailHost = $this->params['newMailServerIp'];
         }
         if ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'imap') {
@@ -55,11 +56,10 @@ class App
     {
         $rcptTo = explode(':', $_SERVER['HTTP_AUTH_SMTP_TO']);
         $recipient = trim(end($rcptTo));
-        list($login, $domen) = explode('@', $recipient);
         $redis = new Redis();
         $redis->connect('127.0.0.1');
         $mailHost = $this->params['oldMailServerIp'];
-        if ($redis->exists($login)) {
+        if ($redis->exists($this->params['redisRegistryPrefix'] . ':' . $recipient)) {
             $mailHost = $this->params['newMailServerIp'];
         }
         header("Auth-Status: OK");
@@ -82,10 +82,11 @@ class App
             echo json_encode(false);
         }
 
+        $key = $this->params['redisRegistryPrefix'] . ':' . $_GET['username'] . '@' . $this->params['mailDomain'];
         if ($_GET['set'] == 1) {
-            echo json_encode($redis->set($_GET['username'], 1));
+            echo json_encode($redis->set($key, 1));
         } elseif ($_GET['set'] == 0) {
-            echo json_encode((boolean)$redis->del($_GET['username']));
+            echo json_encode((boolean)$redis->del($key));
         }
     }
 }
