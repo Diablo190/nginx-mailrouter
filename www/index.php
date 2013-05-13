@@ -53,7 +53,8 @@ class App
 
     public function smtpProxy()
     {
-        $recipient = trim(end(explode(':', $_SERVER['HTTP_AUTH_SMTP_TO'])));
+        $rcptTo = explode(':', $_SERVER['HTTP_AUTH_SMTP_TO']);
+        $recipient = trim(end($rcptTo));
         list($login, $domen) = explode('@', $recipient);
         $redis = new Redis();
         $redis->connect('127.0.0.1');
