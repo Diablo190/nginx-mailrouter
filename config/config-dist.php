@@ -2,8 +2,12 @@
 
 return array(
     'sentryDSN' => '',
-    'redisRegistryPrefix' => 'nexthop',
     'mailDomain' => '66.ru',
+
+    'mysqlHost' => 'localhost',
+    'mysqlDB' => '',
+    'mysqlLogin' => '',
+    'mysqlPassword' => '',
 
     'oldMailServerIp' => '',
     'newMailServerIp' => '',

@@ -6,6 +6,11 @@ class App
 {
     public $params;
 
+    /**
+     * @var Raven_Client
+     */
+    public $ravenClient;
+
     function __construct()
     {
         $this->params = require(__DIR__ . '/../config/config.php');
@@ -15,12 +20,79 @@ class App
 
     protected function installErrorHandler()
     {
-        $client = new Raven_Client($this->params['sentryDSN']);
+        $this->ravenClient = new Raven_Client($this->params['sentryDSN']);
 
-        $error_handler = new Raven_ErrorHandler($client);
+        $error_handler = new Raven_ErrorHandler($this->ravenClient);
         $error_handler->registerExceptionHandler();
         $error_handler->registerErrorHandler();
         $error_handler->registerShutdownFunction();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function mysqlConnect()
+    {
+        $res = mysql_connect($this->params['mysqlHost'], $this->params['mysqlLogin'], $this->params['mysqlPassword']);
+        if (!$res) {
+            $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
+            return false;
+        }
+        $res = mysql_select_db($this->params['mysqlDB']);
+        if (!$res) {
+            $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $username
+     * @return bool
+     */
+    protected function mysqlMarkUserToNewMailbackend($username)
+    {
+        $username = mysql_real_escape_string($username);
+        $res = mysql_query("INSERT INTO mail_router ('username') VALUES ('$username')");
+        if (!$res) {
+            $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $username
+     * @return bool
+     */
+    protected function mysqlIsUserOnNewMailbackend($username)
+    {
+        $username = mysql_real_escape_string($username);
+        $res = mysql_query("SELECT username FROM mail_router WHERE username = '$username'");
+        if (!$res) {
+            $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
+            return false;
+        }
+
+        return mysql_num_rows($res) > 0;
+    }
+
+    /**
+     * @param $username
+     * @return bool
+     */
+    protected function mysqlMarkUserToOldMailbackend($username)
+    {
+        $username = mysql_real_escape_string($username);
+        $res = mysql_query("DELETE FROM mail_router where username = '$username'");
+        if (!$res) {
+            $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
+            return false;
+        }
+
+        return true;
     }
 
     public function popImapProxy()
@@ -33,11 +105,9 @@ class App
             return;
         }
 
-        $redis = new Redis();
-        $redis->connect('127.0.0.1');
         $mailHost = $this->params['oldMailServerIp'];
-        $key = $this->params['redisRegistryPrefix'] . ':' . $_SERVER['HTTP_AUTH_USER'] . '@' . $this->params['mailDomain'];
-        if ($redis->exists($key)) {
+        $key = $_SERVER['HTTP_AUTH_USER'] . '@' . $this->params['mailDomain'];
+        if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($key)) {
             $mailHost = $this->params['newMailServerIp'];
         }
         if ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'imap') {
@@ -56,10 +126,8 @@ class App
     {
         $rcptTo = explode(':', $_SERVER['HTTP_AUTH_SMTP_TO']);
         $recipient = trim(end($rcptTo));
-        $redis = new Redis();
-        $redis->connect('127.0.0.1');
         $mailHost = $this->params['oldMailServerIp'];
-        if ($redis->exists($this->params['redisRegistryPrefix'] . ':' . $recipient)) {
+        if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($recipient)) {
             $mailHost = $this->params['newMailServerIp'];
         }
         header("Auth-Status: OK");
@@ -69,24 +137,23 @@ class App
 
     public function isUserOnNewBackend()
     {
-        $redis = new Redis();
-        $redis->connect('127.0.0.1');
-        echo json_encode($redis->exists($_GET['username']));
+        if (!$this->mysqlConnect()) {
+            echo json_encode(false);
+        }
+        echo json_encode($this->mysqlIsUserOnNewMailbackend($_GET['username']));
     }
 
     public function setUserOnNewBackend()
     {
-        $redis = new Redis();
-        $connected = $redis->connect('127.0.0.1');
-        if (!$connected) {
+        if (!$this->mysqlConnect()) {
             echo json_encode(false);
         }
 
-        $key = $this->params['redisRegistryPrefix'] . ':' . $_GET['username'] . '@' . $this->params['mailDomain'];
+        $key = $_GET['username'] . '@' . $this->params['mailDomain'];
         if ($_GET['set'] == 1) {
-            echo json_encode($redis->set($key, 1));
+            echo json_encode($this->mysqlMarkUserToNewMailbackend($key));
         } elseif ($_GET['set'] == 0) {
-            echo json_encode((boolean)$redis->del($key));
+            echo json_encode($this->mysqlMarkUserToOldMailbackend($key));
         }
     }
 }
