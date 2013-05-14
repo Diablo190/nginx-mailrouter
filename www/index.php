@@ -141,7 +141,8 @@ class App
             echo json_encode(false);
             return;
         }
-        echo json_encode($this->mysqlIsUserOnNewMailbackend($_GET['username']));
+        $key = $_GET['username'] . '@' . $this->params['mailDomain'];
+        echo json_encode($this->mysqlIsUserOnNewMailbackend($key));
     }
 
     public function setUserOnNewBackend()
