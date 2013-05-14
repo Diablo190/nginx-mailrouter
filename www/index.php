@@ -54,7 +54,7 @@ class App
     protected function mysqlMarkUserToNewMailbackend($username)
     {
         $username = mysql_real_escape_string($username);
-        $res = mysql_query("INSERT INTO mail_router ('username') VALUES ('$username')");
+        $res = mysql_query("INSERT INTO mail_router (username) VALUES ('$username')");
         if (!$res) {
             $this->ravenClient->captureMessage(mysql_error(), array(), Raven_Client::ERROR);
             return false;
