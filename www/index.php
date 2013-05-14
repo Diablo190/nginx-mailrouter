@@ -139,6 +139,7 @@ class App
     {
         if (!$this->mysqlConnect()) {
             echo json_encode(false);
+            return;
         }
         echo json_encode($this->mysqlIsUserOnNewMailbackend($_GET['username']));
     }
@@ -147,6 +148,7 @@ class App
     {
         if (!$this->mysqlConnect()) {
             echo json_encode(false);
+            return;
         }
 
         $key = $_GET['username'] . '@' . $this->params['mailDomain'];
