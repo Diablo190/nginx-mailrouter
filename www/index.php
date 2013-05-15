@@ -106,7 +106,11 @@ class App
         }
 
         $mailHost = $this->params['oldMailServerIp'];
-        $key = $_SERVER['HTTP_AUTH_USER'] . '@' . $this->params['mailDomain'];
+        if (strpos($_SERVER['HTTP_AUTH_USER'], '@') == false)
+            $key = $_SERVER['HTTP_AUTH_USER'] . '@' . $this->params['mailDomain'];
+        else
+            $key = $_SERVER['HTTP_AUTH_USER'];
+
         if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($key)) {
             $mailHost = $this->params['newMailServerIp'];
         }
