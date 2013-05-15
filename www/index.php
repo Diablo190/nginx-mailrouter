@@ -122,19 +122,6 @@ class App
         header("Auth-Port: " . $mailPort);
     }
 
-    public function smtpProxy()
-    {
-        $rcptTo = explode(':', $_SERVER['HTTP_AUTH_SMTP_TO']);
-        $recipient = trim(end($rcptTo));
-        $mailHost = $this->params['oldMailServerIp'];
-        if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($recipient)) {
-            $mailHost = $this->params['newMailServerIp'];
-        }
-        header("Auth-Status: OK");
-        header("Auth-Server: " . $mailHost);
-        header("Auth-Port: 25");
-    }
-
     public function isUserOnNewBackend()
     {
         if (!$this->mysqlConnect()) {
@@ -167,8 +154,6 @@ if (!empty($_GET['username']) && isset($_GET['set'])) {
     $app->setUserOnNewBackend();
 } elseif (!empty($_GET['username'])) {
     $app->isUserOnNewBackend();
-} elseif (!empty($_SERVER['HTTP_AUTH_SMTP_TO'])) {
-    $app->smtpProxy();
 } else {
     $app->popImapProxy();
 }
