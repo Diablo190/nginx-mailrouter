@@ -105,7 +105,7 @@ class Migrate
 
     protected function writeNewRule($username, $ruleName, $rules, $actions)
     {
-        CurlHelper::postUrl(
+        $answer = CurlHelper::postUrl(
             $this->newScript . '/createRule',
             array(
                 'userName' => $username,
@@ -114,11 +114,15 @@ class Migrate
                 'actions' => json_encode($actions),
             )
         );
+        $answer = json_decode($answer);
+
+        if ($answer['status'] == 'error')
+            throw new Exception($answer['message']);
     }
 
     protected function writeNewRpop($username, $host, $email, $password, $delete = false)
     {
-        CurlHelper::postUrl(
+        $answer = CurlHelper::postUrl(
             $this->newScript . '/addGetMailRule',
             array(
                 'userName' => $username,
@@ -128,5 +132,9 @@ class Migrate
                 'delete' => (int)$delete,
             )
         );
+        $answer = json_decode($answer);
+
+        if ($answer['status'] == 'error')
+            throw new Exception($answer['message']);
     }
 }
