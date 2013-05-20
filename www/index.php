@@ -150,11 +150,29 @@ class App
             echo json_encode($this->mysqlMarkUserToOldMailbackend($key));
         }
     }
+
+    public function migrateUserOnNewBackend()
+    {
+        require_once(__DIR__.'/Migrate.php');
+        $m = new Migrate();
+        try {
+            $m->migrateRules($_GET['username']);
+            $m->migrateRpop($_GET['username']);
+            $m->migrateSettings($_GET['username']);
+        } catch (\m8rge\CurlException $e) {
+            $this->ravenClient->captureException($e);
+            echo json_encode(false);
+            return;
+        }
+        echo json_encode(true);
+    }
 }
 
 $app = new App();
 
-if (!empty($_GET['username']) && isset($_GET['set'])) {
+if (!empty($_GET['username']) && isset($_GET['migrate'])) {
+    $app->migrateUserOnNewBackend();
+} else if (!empty($_GET['username']) && isset($_GET['set'])) {
     $app->setUserOnNewBackend();
 } elseif (!empty($_GET['username'])) {
     $app->isUserOnNewBackend();

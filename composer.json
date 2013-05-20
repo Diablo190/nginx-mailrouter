@@ -9,6 +9,7 @@
         }
     ],
     "require": {
-        "raven/raven": "0.5.1"
+        "raven/raven": "0.5.1",
+        "m8rge/curl-helper": "1.*"
     }
 }
