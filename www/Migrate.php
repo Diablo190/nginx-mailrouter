@@ -31,8 +31,8 @@ class Migrate
                 );
                 $actions[] = $action;
             }
-            if (empty($rules) || empty($actions))
-            $this->writeNewRule($username, $ruleName, $rules, $actions);
+            if (!empty($rules) && !empty($actions))
+                $this->writeNewRule($username, $ruleName, $rules, $actions);
         }
     }
 
