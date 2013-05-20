@@ -79,7 +79,7 @@ class Migrate
 
     protected function getOldRules($username)
     {
-        return CurlHelper::postUrl(
+        $data = CurlHelper::postUrl(
             $this->oldScript . '/msm-cli.cgi',
             array(
                 'package' => 'user',
@@ -87,11 +87,12 @@ class Migrate
                 'user' => $username,
             )
         );
+        return unserialize($data);
     }
 
     protected function getOldRpop($username)
     {
-        return CurlHelper::postUrl(
+        $data = CurlHelper::postUrl(
             $this->oldScript . '/msm-cli.cgi',
             array(
                 'package' => 'user',
@@ -99,6 +100,7 @@ class Migrate
                 'user' => $username,
             )
         );
+        return unserialize($data);
     }
 
     protected function writeNewRule($username, $ruleName, $rules, $actions)
