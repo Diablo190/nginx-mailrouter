@@ -69,7 +69,7 @@ class Migrate
             $this->newWebmailScript,
             array(
                 'controller' => 'userOptions',
-                'action' => 'get',
+                'action' => 'set',
                 'login' => $username,
                 'secKey' => 'tr$FDer#$GSSD&%32s',
                 'options' => json_encode($settings),
