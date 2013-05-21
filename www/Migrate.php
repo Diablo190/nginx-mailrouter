@@ -58,7 +58,7 @@ class Migrate
                 'controller' => 'userOptions',
                 'action' => 'get',
                 'login' => $username,
-                'secKey' => 'tr$FDer#$GSSD&%32s',
+                'secKey' => 'tr$FDer#$GSSD%32s',
             )
         );
     }
@@ -71,7 +71,7 @@ class Migrate
                 'controller' => 'userOptions',
                 'action' => 'set',
                 'login' => $username,
-                'secKey' => 'tr$FDer#$GSSD&%32s',
+                'secKey' => 'tr$FDer#$GSSD%32s',
                 'options' => json_encode($settings),
             )
         );
