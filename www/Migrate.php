@@ -16,13 +16,10 @@ class Migrate
             $ruleName = $oldRule[1];
             $rules = array();
             foreach ($oldRule[2] as $condition) {
-                $rule = array(
-                    $condition[0] => array(
-                        'operation' => $condition[1],
-                        'value' => $condition[2],
-                    ),
+                $rules[$condition[0]] = array(
+                    'operation' => $condition[1],
+                    'value' => $condition[2],
                 );
-                $rules[] = $rule;
             }
             $actions = array();
             foreach ($oldRule[3] as $oldActions) {
