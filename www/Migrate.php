@@ -44,6 +44,7 @@ class Migrate
     public function migrateSettings($username)
     {
         $oldSettings = $this->getOldSettings($username);
+        $oldSettings = json_decode($oldSettings, true);
         $this->writeNewSettings($username, $oldSettings);
     }
 
