@@ -112,7 +112,9 @@ class App
             $key = $_SERVER['HTTP_AUTH_USER'];
 
         if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($key)) {
-            $mailHost = $this->params['newMailServerIp'];
+            $ips = $this->params['newMailServerIp'];
+            $i = rand(0, count($ips)-1);
+            $mailHost = $ips[$i];
         }
         if ($_SERVER['HTTP_AUTH_PROTOCOL'] == 'imap') {
             $mailPort = 143;

@@ -10,5 +10,8 @@ return array(
     'mysqlPassword' => '',
 
     'oldMailServerIp' => '',
-    'newMailServerIp' => '',
+    'newMailServerIp' => array(
+        '',
+        '',
+    ),
 );
