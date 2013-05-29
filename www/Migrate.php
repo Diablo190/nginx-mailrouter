@@ -113,6 +113,21 @@ class Migrate
             )
         );
         $answer = json_decode($answer);
+        if ($answer['status'] == 'error')
+            throw new Exception($answer['message']);
+
+        $answer = CurlHelper::postUrl(
+            $this->newWebmailScript,
+            array(
+                'controller' => 'userOptions',
+                'action' => 'filters_Set',
+                'login' => $username,
+                'secKey' => 'tr$FDer#$GSSD%32s',
+                'rules' => json_encode($rules),
+                'actions' => json_encode($actions),
+            )
+        );
+        $answer = json_decode($answer);
 
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
