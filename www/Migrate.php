@@ -23,10 +23,7 @@ class Migrate
             }
             $actions = array();
             foreach ($oldRule[3] as $oldActions) {
-                $action = array(
-                    $oldActions[0] => $oldActions[1]
-                );
-                $actions[] = $action;
+                $actions[ $oldActions[0] ] = $oldActions[1];
             }
             if (!empty($rules) && !empty($actions))
                 $this->writeNewRule($username, $ruleName, $rules, $actions);
