@@ -109,7 +109,7 @@ class Migrate
                 'actions' => json_encode($actions),
             )
         );
-        $answer = json_decode($answer);
+        $answer = json_decode($answer, true);
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
 
@@ -124,7 +124,7 @@ class Migrate
                 'actions' => json_encode($actions),
             )
         );
-        $answer = json_decode($answer);
+        $answer = json_decode($answer, true);
 
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
@@ -142,7 +142,7 @@ class Migrate
                 'delete' => (int)$delete,
             )
         );
-        $answer = json_decode($answer);
+        $answer = json_decode($answer, true);
 
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
