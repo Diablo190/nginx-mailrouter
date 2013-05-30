@@ -25,9 +25,34 @@ class Migrate
             foreach ($oldRule[3] as $oldActions) {
                 $actions[ $oldActions[0] ] = $oldActions[1];
             }
+            $actions = $this->postProcessActions($actions);
+            $rules = $this->postProcessRules($rules);
+
             if (!empty($rules) && !empty($actions))
                 $this->writeNewRule($username, $ruleName, $rules, $actions);
         }
+    }
+
+    public function postProcessActions($actions)
+    {
+        if (count($actions) > 1 && array_key_exists('Discard', $actions)) {
+            unset($actions['Discard']);
+        }
+
+        return $actions;
+    }
+
+    public function postProcessRules($rules)
+    {
+        if (!empty($rules['Header Field']) && $rules['Header Field']['value'] == 'X-Spam-Flag: YES') {
+            $rules['X-Spam-Flag'] = array(
+                'operation' => 'is',
+                'value' => 'YES',
+            );
+            unset($rules['Header Field']);
+        }
+
+        return $rules;
     }
 
     public function migrateRpop($username)
