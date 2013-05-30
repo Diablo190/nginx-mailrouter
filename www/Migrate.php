@@ -146,7 +146,7 @@ class Migrate
             $this->newWebmailScript,
             array(
                 'controller' => 'userOptions',
-                'action' => 'filters_Set',
+                'action' => 'filtersSet',
                 'login' => $username,
                 'secKey' => 'tr$FDer#$GSSD%32s',
                 'rules' => json_encode($rules),
