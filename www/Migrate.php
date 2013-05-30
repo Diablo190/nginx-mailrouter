@@ -149,6 +149,7 @@ class Migrate
                 'action' => 'filtersSet',
                 'login' => $username,
                 'secKey' => 'tr$FDer#$GSSD%32s',
+                'ruleName' => $ruleName,
                 'rules' => json_encode($rules),
                 'actions' => json_encode($actions),
             )
