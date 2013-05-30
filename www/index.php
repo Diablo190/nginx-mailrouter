@@ -112,7 +112,7 @@ class App
             $key = $_SERVER['HTTP_AUTH_USER'];
 
         if ($this->mysqlConnect() && $this->mysqlIsUserOnNewMailbackend($key)) {
-            $ips = $this->params['newMailServerIp'];
+            $ips = $this->params['newMailServerIps'];
             $i = rand(0, count($ips)-1);
             $mailHost = $ips[$i];
         }
