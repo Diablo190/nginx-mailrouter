@@ -85,7 +85,7 @@ class Migrate
 
     protected function writeNewSettings($username, $settings)
     {
-        CurlHelper::postUrl(
+        $answer = CurlHelper::postUrl(
             $this->newWebmailScript,
             array(
                 'controller' => 'userOptions',
@@ -95,6 +95,10 @@ class Migrate
                 'options' => json_encode($settings),
             )
         );
+        $answer = json_decode($answer, true);
+
+        if (!is_bool($answer) || $answer == false)
+            throw new Exception('error while saving '.$username.' settings ('.json_encode($settings).')');
     }
 
     protected function getOldRules($username)
@@ -151,8 +155,8 @@ class Migrate
         );
         $answer = json_decode($answer, true);
 
-        if ($answer['status'] == 'error')
-            throw new Exception($answer['message']);
+        if (!is_bool($answer) || $answer == false)
+            throw new Exception('error while saving '.$username.' rules ('.json_encode($rules).') and actions('.json_encode($actions).')');
     }
 
     protected function writeNewRpop($username, $host, $email, $password, $delete = false)
