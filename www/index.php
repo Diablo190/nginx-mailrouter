@@ -158,9 +158,23 @@ class App
         require_once(__DIR__.'/Migrate.php');
         $m = new Migrate();
         try {
-            $m->migrateRules($_GET['username']);
-            $m->migrateRpop($_GET['username']);
-            $m->migrateSettings($_GET['username']);
+            if (isset($_GET['only'])) {
+                if ($_GET['only'] == 'rules') {
+                    $m->migrateRules($_GET['username']);
+                } elseif ($_GET['only'] == 'rpop') {
+                    $m->migrateRpop($_GET['username']);
+                } elseif ($_GET['only'] == 'options') {
+                    $m->migrateSettings($_GET['username']);
+                } else {
+                    $this->ravenClient->captureMessage('bad only flag');
+                    echo json_encode(false);
+                    return;
+                }
+            } else {
+                $m->migrateRules($_GET['username']);
+                $m->migrateRpop($_GET['username']);
+                $m->migrateSettings($_GET['username']);
+            }
         } catch (\m8rge\CurlException $e) {
             $this->ravenClient->captureException($e);
             echo json_encode(false);
