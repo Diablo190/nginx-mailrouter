@@ -14,6 +14,9 @@ class Migrate
         $oldRules = $this->getOldRules($username);
         foreach ($oldRules['data'] as $oldRule) {
             $ruleName = $oldRule[1];
+            if (preg_match('/rule\d+_\d/', $ruleName)) { // unnecessary copy
+                continue;
+            }
             $rules = array();
             foreach ($oldRule[2] as $condition) {
                 $rules[$condition[0]] = array(
@@ -129,15 +132,19 @@ class Migrate
 
     protected function writeNewRule($username, $ruleName, $rules, $actions)
     {
-        $answer = CurlHelper::postUrl(
-            $this->newScript . '/createRule',
-            array(
-                'userName' => $username,
-                'ruleName' => $ruleName,
-                'rules' => json_encode($rules),
-                'actions' => json_encode($actions),
-            )
-        );
+        try {
+            $answer = CurlHelper::postUrl(
+                $this->newScript . '/createRule',
+                array(
+                    'userName' => $username,
+                    'ruleName' => $ruleName,
+                    'rules' => json_encode($rules),
+                    'actions' => json_encode($actions),
+                )
+            );
+        } catch (\m8rge\CurlException $e) {
+            $answer = $e->getData();
+        }
         $answer = json_decode($answer, true);
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
@@ -162,16 +169,20 @@ class Migrate
 
     protected function writeNewRpop($username, $host, $email, $password, $delete = false)
     {
-        $answer = CurlHelper::postUrl(
-            $this->newScript . '/addGetMailRule',
-            array(
-                'userName' => $username,
-                'host' => $host,
-                'email' => $email,
-                'password' => $password,
-                'delete' => (int)$delete,
-            )
-        );
+        try {
+            $answer = CurlHelper::postUrl(
+                $this->newScript . '/addGetMailRule',
+                array(
+                    'userName' => $username,
+                    'host' => $host,
+                    'email' => $email,
+                    'password' => $password,
+                    'delete' => (int)$delete,
+                )
+            );
+        } catch (\m8rge\CurlException $e) {
+            $answer = $e->getData();
+        }
         $answer = json_decode($answer, true);
 
         if ($answer['status'] == 'error')
