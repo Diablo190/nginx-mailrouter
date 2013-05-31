@@ -149,9 +149,6 @@ class Migrate
         if ($answer['status'] == 'error')
             throw new Exception($answer['message']);
 
-        if (!empty($actions['Store in'])) {
-            $actions['Store in'] = imap_utf7_encode($actions['Store in']);
-        }
         $answer = CurlHelper::postUrl(
             $this->newWebmailScript,
             array(
