@@ -7,7 +7,7 @@ class Migrate
     protected $oldScript = 'http://mailadmin.66.ru';
     protected $newScript = 'http://79.172.49.70';
     protected $oldWebmailScript = 'http://79.172.49.157/service.php';
-    protected $newWebmailScript = 'http://79.172.49.141/service.php';
+    protected $newWebmailScript = 'http://79.172.49.103/service.php';
 
     public $newWebmailSecKey;
 
