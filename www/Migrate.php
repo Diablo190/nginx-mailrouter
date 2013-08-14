@@ -9,6 +9,13 @@ class Migrate
     protected $oldWebmailScript = 'http://79.172.49.157/service.php';
     protected $newWebmailScript = 'http://79.172.49.141/service.php';
 
+    public $newWebmailSecKey;
+
+    function __construct($newWebmailSecKey)
+    {
+        $this->newWebmailSecKey = $newWebmailSecKey;
+    }
+
     public function migrateRules($username)
     {
         $oldRules = $this->getOldRules($username);
@@ -81,7 +88,7 @@ class Migrate
                 'controller' => 'userOptions',
                 'action' => 'get',
                 'login' => $username,
-                'secKey' => 'tr$FDer#$GSSD%32s',
+                'secKey' => $this->newWebmailSecKey,
             )
         );
     }
@@ -94,7 +101,7 @@ class Migrate
                 'controller' => 'userOptions',
                 'action' => 'set',
                 'login' => $username,
-                'secKey' => 'tr$FDer#$GSSD%32s',
+                'secKey' => $this->newWebmailSecKey,
                 'options' => json_encode($settings),
             )
         );
@@ -155,7 +162,7 @@ class Migrate
                 'controller' => 'userOptions',
                 'action' => 'filtersSet',
                 'login' => $username,
-                'secKey' => 'tr$FDer#$GSSD%32s',
+                'secKey' => $this->newWebmailSecKey,
                 'ruleName' => $ruleName,
                 'rules' => json_encode($rules),
                 'actions' => json_encode($actions),

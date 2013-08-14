@@ -156,7 +156,7 @@ class App
     public function migrateUserOnNewBackend()
     {
         require_once(__DIR__.'/Migrate.php');
-        $m = new Migrate();
+        $m = new Migrate($this->params['newWebmailSecKey']);
         try {
             if (isset($_GET['only'])) {
                 if ($_GET['only'] == 'rules') {
